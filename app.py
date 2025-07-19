@@ -167,8 +167,8 @@ def verificar_bateria():
     # guardar_log(porcentaje, cargando)
 
     # Solo notificar si es 100% y está cargando (evita múltiples notificaciones)
-    if porcentaje >= 100 and cargando:
     # if porcentaje >= 10:
+    if porcentaje >= 100 and cargando:
         global contador
         contador += 1
         NOTIFY_PY_MULTIPLATAFORMA(
@@ -176,7 +176,7 @@ def verificar_bateria():
         )
         winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
 
-        if contador == 1:
+        if contador == 5:
             enviar_correo(porcentaje)
             enviar_sms(porcentaje)
             contador = 0
