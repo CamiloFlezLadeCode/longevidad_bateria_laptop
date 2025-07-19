@@ -1,39 +1,40 @@
+# HERRAMIENTA PARA ACCEDER AL ESTADO DE LA BATERÍA DE LA LAPTOP
 import psutil
+# HERRAMIENTA PARA MOSTRAR NOTIFICACIONES
 from notifypy import Notify
+# HERRAMIENTA PARA MANEJAR ESPERAS EN LA EJECUCIÓN
 import time
+# HARRAMIENTA PARA EL MANEJO DE FECHAS
 from datetime import datetime
+# HERRAMIENTA PARA GENERAR/EMITIR SONIDO
 import winsound
-
 # HERRAMIENTAS PARA ENVIAR CORREO
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
 # HERRAMIENTAS PARA ENVIAR MENSAJE DE TEXTO SMS / CON LA API TWILIO
 from twilio.rest import Client
 import json
+# HERRAMIENTAS PARA CAPTURAR VARIABLES DE ENTORNO
+from dotenv import load_dotenv
+import os
 
+load_dotenv()  # Carga las variables de entorno del archivo .env
 
 def enviar_sms(porcentaje_bateria):
     # Se carga la configuración para interactuar con la api twilio
-    config = r"./config_twilio_sms.json"
-    with open(config, "r") as archivo:
-        datos = json.load(archivo)
     # Configuración (obtén estos datos en twilio.com/console)
-    servicio_twilio = "SERVICIO_2"
-    account_sid = datos[servicio_twilio]["account_sid"]
-    auth_token = datos[servicio_twilio]["auth_token"]
-    twilio_number = datos[servicio_twilio][
-        "twilio_number"
-    ]  # Número proporcionado por Twilio
-
+    account_sid = os.environ.get("SID_CUENTA_TWILIO")
+    auth_token = os.environ.get("TOKEN_AUTENTICACION_TWILIO")
+    twilio_number = os.environ.get("NUMERO_PUBLICO_TWILIO")  # Número proporcionado por Twilio
+    recipient_number = os.environ.get("NUMERO_DESTINATARIO_SMS")
     client = Client(account_sid, auth_token)
     message = client.messages.create(
         body=f"""
             🔋 BATERÍA CARGADA AL {porcentaje_bateria}%\n---------------------------------------------\nPor favor desconecte el cargador 😊
         """,
         from_=twilio_number,
-        to="+573236742391",  # Número destino (con código de país)
+        to=recipient_number,  # Número destino (con código de país)
     )
 
     print(f"Mensaje SMS enviado. SID: {message.sid}")
@@ -41,17 +42,14 @@ def enviar_sms(porcentaje_bateria):
 
 def enviar_correo(nivel_de_bateria):
     # Configuración del servidor SMTP (ejemplo para Gmail)
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 587  # Puerto para TLS
-    # remitente = "leoperezserna@gmail.com"
-    # password = "emjh zree qtsg kcmu"  # O contraseña de aplicación si tienes 2FA
-    remitente = "juan.florez180@pascualbravo.edu.co"
-    password = "unjn nkkp bkax pctz"
-
+    smtp_server = os.environ.get("SERVIDOR_SMTP")
+    smtp_port = os.environ.get("PUERTO_SMTP")
+    remitente = os.environ.get("REMITENTE")
+    password = os.environ.get("CONTRASENA_DE_APLICACIONES")
     # Destinatario y mensaje
-    destinatario = "leoperezserna@gmail.com"
+    destinatario = os.environ.get("CORREO_DESTINATARIO")
     asunto = "🔋 ¡ALERTA! Batería de la laptop completamente cargada"
-    cuerpo = "Hola, esto es un correo enviado usando Python."
+    # cuerpo = "Hola, esto es un correo enviado usando Python."
     cuerpo_html = f"""
         <!DOCTYPE html>
         <html>
@@ -170,7 +168,7 @@ def verificar_bateria():
 
     # Solo notificar si es 100% y está cargando (evita múltiples notificaciones)
     if porcentaje >= 100 and cargando:
-        # if porcentaje >= 10:
+    # if porcentaje >= 10:
         global contador
         contador += 1
         NOTIFY_PY_MULTIPLATAFORMA(
@@ -178,7 +176,7 @@ def verificar_bateria():
         )
         winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
 
-        if contador == 5:
+        if contador == 1:
             enviar_correo(porcentaje)
             enviar_sms(porcentaje)
             contador = 0
