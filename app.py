@@ -22,23 +22,42 @@ import os
 load_dotenv()  # Carga las variables de entorno del archivo .env
 
 def enviar_sms(porcentaje_bateria):
-    # Se carga la configuración para interactuar con la api twilio
-    # Configuración (obtén estos datos en twilio.com/console)
-    account_sid = os.environ.get("SID_CUENTA_TWILIO")
-    auth_token = os.environ.get("TOKEN_AUTENTICACION_TWILIO")
-    twilio_number = os.environ.get("NUMERO_PUBLICO_TWILIO")  # Número proporcionado por Twilio
-    recipient_number = os.environ.get("NUMERO_DESTINATARIO_SMS")
-    client = Client(account_sid, auth_token)
-    message = client.messages.create(
-        body=f"""
-            🔋 BATERÍA CARGADA AL {porcentaje_bateria}%\n---------------------------------------------\nPor favor desconecte el cargador 😊
-        """,
-        from_=twilio_number,
-        to=recipient_number,  # Número destino (con código de país)
-    )
+    client = None  # Inicializamos client para el bloque finally
+    try:
+        # 1. Validación de variables de entorno
+        account_sid = os.environ.get("SID_CUENTA_TWILIO")
+        auth_token = os.environ.get("TOKEN_AUTENTICACION_TWILIO")
+        twilio_number = os.environ.get("NUMERO_PUBLICO_TWILIO")
+        recipient_number = os.environ.get("NUMERO_DESTINATARIO_SMS")
+        
+        if not all([account_sid, auth_token, twilio_number, recipient_number]):
+            raise ValueError("Faltan variables de entorno requeridas para Twilio")
+        
+        print(f"Intentando enviar SMS a: {recipient_number}")
 
-    print(f"Mensaje SMS enviado. SID: {message.sid}")
-
+        # 2. Creamos el cliente
+        client = Client(account_sid, auth_token)
+        
+        # 3. Enviamos el mensaje (versión más limpia del body)
+        message = client.messages.create(
+            body=f"🔋 BATERÍA CARGADA AL {porcentaje_bateria}%\n"
+                 "---------------------------------------------\n"
+                 "Por favor desconecte el cargador 😊",
+            from_=twilio_number,
+            to=recipient_number
+        )
+        
+        print(f"SMS enviado. SID: {message.sid}")
+        print(f"Estado del mensaje SMS. STATUS: {message.status}")
+        print(f"Estado: https://console.twilio.com/us1/monitor/logs/message-logs/{message.sid}")
+        
+        return True  # Indicador de éxito
+        
+    except Exception as e:
+        print(f"Error al enviar SMS: {str(e)}")
+        return False  # Indicador de fallo
+    finally:
+        pass
 
 def enviar_correo(nivel_de_bateria):
     # Configuración del servidor SMTP (ejemplo para Gmail)
