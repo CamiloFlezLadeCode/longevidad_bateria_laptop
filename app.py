@@ -181,8 +181,8 @@ def limpiar_log():
     # Fecha actual en Colombia
     now = datetime.now(tz_colombia)
 
-    # Fecha límite (3 días atrás)
-    limit_date = now - timedelta(days=3)
+    # Fecha límite (2 días atrás)
+    limit_date = now - timedelta(days=2)
 
     # Expresión regular para capturar la fecha dentro de corchetes
     pattern = re.compile(
