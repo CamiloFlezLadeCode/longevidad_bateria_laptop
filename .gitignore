@@ -201,3 +201,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+#Last cleaning file
+ultima_limpieza.txt
