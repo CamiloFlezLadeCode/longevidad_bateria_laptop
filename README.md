@@ -3,3 +3,7 @@ Aplicación en Python para ayudar con la longevidad de la batería de la laptop.
 
 # Pasos comando para instalar dependencias
 pip install -r requirements.txt
+
+# Comando para crear/generar .exe del script
+pyinstaller --onefile --windowed --icon=battery_78337.ico -n "Verificar_Estado_Bateria" app.py
+NOTA: Luego de construir el .exe, la carpeta icons debe estar en la raíz donde se ubique el .exe

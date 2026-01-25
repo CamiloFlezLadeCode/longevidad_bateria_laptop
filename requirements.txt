@@ -5,3 +5,4 @@ twilio==9.6.5
 notify-py==0.3.43
 chardet==5.2.0
 pytz==2025.1
+pyinstaller==6.18.0
