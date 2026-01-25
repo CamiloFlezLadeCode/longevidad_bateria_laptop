@@ -207,7 +207,7 @@ __marimo__/
 ultima_limpieza.txt
 
 #.exe
-.exe
+*.exe
 
 #Accesos directos
-.lnk
+*.lnk
