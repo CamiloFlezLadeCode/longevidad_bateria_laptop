@@ -267,12 +267,12 @@ def NOTIFY_PY_MULTIPLATAFORMA(Titulo, Mensaje):
     notification.send()
 
 
-# def guardar_log(porcentaje, cargando):
-#     """Optimización: Abre el archivo una sola vez al inicio y usa 'write' en modo buffer."""
-#     Cargando = 'Sí' if cargando else 'No'
-#     fecha_hora = datetime.now().strftime("%d/%m/%Y %I:%M %p")
-#     with open("bateria_log.log", "a", buffering=1, encoding="utf-8") as log_file:  # buffering=1 (line-buffered)
-#         log_file.write(f"Batería: {porcentaje}% - ¿Cargando?: {Cargando} => [ {fecha_hora} ]\n")
+def guardar_log(porcentaje, cargando):
+    """Optimización: Abre el archivo una sola vez al inicio y usa 'write' en modo buffer."""
+    Cargando = 'Sí' if cargando else 'No'
+    fecha_hora = datetime.now().strftime("%d/%m/%Y %I:%M %p")
+    with open("bateria_log.log", "a", buffering=1, encoding="utf-8") as log_file:  # buffering=1 (line-buffered)
+        log_file.write(f"Batería: {porcentaje}% - ¿Cargando?: {Cargando} => [ {fecha_hora} ]\n")
 
 contador = 0
 
@@ -286,7 +286,7 @@ def verificar_bateria():
 
     porcentaje = battery.percent
     cargando = battery.power_plugged
-    # guardar_log(porcentaje, cargando)
+    guardar_log(porcentaje, cargando)
 
     # Solo notificar si es 100% y está cargando (evita múltiples notificaciones)
     # if porcentaje >= 10:
